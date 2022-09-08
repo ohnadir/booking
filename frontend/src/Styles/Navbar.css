@@ -1,0 +1,14 @@
+.item-container .item-active{
+    border: 1px solid white;
+    padding: 5px 8px ;
+    border-radius: 16px;
+}
+.item-container .item{
+    border: 1px solid transparent;
+    padding: 5px 8px ;
+    border-radius: 16px;
+}
+
+.item-container .item:hover{
+    border: 1px solid white;;
+}
