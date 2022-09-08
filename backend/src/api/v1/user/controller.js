@@ -1,5 +1,5 @@
 const {
-  addUserService,
+  registerUserService,
   userSignInService,
   updateUserService,
   deleteUserService,
@@ -14,8 +14,8 @@ const {
   
 } = require('./service');
 
-exports.addUser = async (req, res) => {
-  const { status, code, message } = await addUserService({
+exports.registerUser = async (req, res) => {
+  const { status, code, message } = await registerUserService({
     body: req.body,
     ...req.body,
     res: res

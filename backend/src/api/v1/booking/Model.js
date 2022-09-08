@@ -2,7 +2,7 @@ const { Schema, model } = require('mongoose');
 const mongoose = require("mongoose");
 
 
-const productSchema = Schema(
+const bookingSchema = Schema(
   {
     name: { type: String, required: true, trim: true },
     slug: { 
@@ -12,7 +12,7 @@ const productSchema = Schema(
     },
     desc: { type: String, required: true},
     price: { type: String, required: true},
-    productPictures: [],
+    bookingPictures: [],
     reviews: [
       { userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user' } },
       {review: String}
@@ -32,4 +32,4 @@ const productSchema = Schema(
   { timestamps: true }
 );
 
-module.exports = model('product', productSchema);
+module.exports = model('booking', bookingSchema);

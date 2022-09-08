@@ -2,9 +2,8 @@ const { User } = require('../models');
 const crypto = require('crypto');
 const sendToken = require('../utils/jwtToken')
 const sendEmail = require('../utils/sendEmail')
-const cloudinary = require('cloudinary');
 
-exports.addUserService = async ({ body, res }) => {
+exports.registerUserService = async ({ body, res }) => {
   const { firstName, lastName, password, email, phone, role } = body;
   
   const response = {
@@ -31,7 +30,6 @@ exports.addUserService = async ({ body, res }) => {
         return response;
       }
     }
-    // const hash_password = bcrypt.hashSync(password, 10);
 
     const newUser = new User({
       firstName,

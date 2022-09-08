@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const {
-  addUser,
+  registerUser,
   updateUser,
   userSignIn,
   deleteUser,
@@ -13,7 +13,7 @@ const {
 } = require('../user/controller');
 
 const {
-  addUserValidator,
+  registerUserValidator,
   updateUserValidator,
   idValidator,
 } = require('../user/validator');
@@ -25,7 +25,7 @@ const { isAuthenticatedUser, authorizeRoles } = require('../middleware/auth')
 // authorizeRoles('user');
 // authorizeRoles('admin');
 
-router.post('/signup', addUserValidator, validationResult, addUser);
+router.post('/register', registerUserValidator, validationResult, registerUser);
 router.post('/login', userSignIn);
 
 router.patch(

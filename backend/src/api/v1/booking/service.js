@@ -1,18 +1,18 @@
-const { Product } = require('../models');
+const { Booking } = require('../models');
 // const shortid = require("shortid");
 const slugify = require("slugify");
 const ErrorMiddleware = require('../middleware/errors')
 const APIFeatures = require('../utils/APIFeatures')
 
-exports.addProductService = async ({ name,price,quantity,desc, productPictures,category,  _id }) => {
+exports.addBookingService = async ({ name,price,quantity,desc, bookingPictures,category,  _id }) => {
   const response = {
     code: 201,
     status: 'Success',
-    message: 'Product added successfully',
+    message: 'Booking added successfully',
   };
 
   try {
-    const isNameExist = await Product.findOne({ name });
+    const isNameExist = await Booking.findOne({ name });
     if (isNameExist) {
       response.code = 422;
       response.status = 'Failed';
@@ -20,17 +20,17 @@ exports.addProductService = async ({ name,price,quantity,desc, productPictures,c
       return response;
     }
 
-    const newProduct = new Product({
+    const newBooking = new Booking({
       name,
       slug: slugify(name),
       price,
       quantity,
       desc,
-      productPictures,
+      bookingPictures,
       category,
       // createdBy: req.user._id,
     });
-    await newProduct.save();
+    await newBooking.save();
     return response;
     
 
@@ -42,7 +42,7 @@ exports.addProductService = async ({ name,price,quantity,desc, productPictures,c
   }
 };
 
-exports.updateProductService = async ({
+exports.updateBookingService = async ({
   id,
   name,
   price,
@@ -51,27 +51,27 @@ exports.updateProductService = async ({
   const response = {
     code: 200,
     status: 'Success',
-    message: 'Product updated successfully',
+    message: 'Booking updated successfully',
     data: {},
   };
 
   try {
-    const product = await Product.findOne({
+    const booking = await Booking.findOne({
       _id: id,
       isDelete: false,
     }).exec();
-    if (!product) {
+    if (!booking) {
       response.code = 422;
       response.status = 'failed';
-      response.message = 'No product data found';
+      response.message = 'No booking data found';
       return response;
     }
 
-    const isNameExist = await Product.findOne({ name });
+    const isNameExist = await Booking.findOne({ name });
     if (
       isNameExist &&
       name === isNameExist.name &&
-      String(product._id) !== String(isNameExist._id)
+      String(booking._id) !== String(isNameExist._id)
     ) {
       response.code = 422;
       response.status = 'failed';
@@ -79,13 +79,13 @@ exports.updateProductService = async ({
       return response;
     }
 
-    product.name = name ? name : product.name;
-    product.price = price ? price : product.price;
-    product.desc = desc ? desc : product.desc;
+    booking.name = name ? name : booking.name;
+    booking.price = price ? price : booking.price;
+    booking.desc = desc ? desc : booking.desc;
 
-    await product.save();
+    await booking.save();
 
-    response.data.product = product;
+    response.data.booking = booking;
     return response;
     
   } catch (error) {
@@ -96,28 +96,28 @@ exports.updateProductService = async ({
   }
 };
 
-exports.deleteProductService = async ({ id }) => {
+exports.deleteBookingService = async ({ id }) => {
   const response = {
     code: 200,
     status: 'success',
-    message: 'Delete product successfully',
+    message: 'Delete booking successfully',
   };
 
   try {
-    const product = await Product.findOne({
+    const booking = await Booking.findOne({
       _id: id,
       isDelete: false,
     });
-    if (!product) {
+    if (!booking) {
       response.code = 404;
       response.status = 'failed';
-      response.message = 'No product data found';
+      response.message = 'No booking data found';
       return response;
     }
 
-    product.isDelete = true;
-    product.deletedAt = Date.now();
-    await product.save();
+    booking.isDelete = true;
+    booking.deletedAt = Date.now();
+    await booking.save();
 
     return response;
   } catch (error) {
@@ -128,11 +128,11 @@ exports.deleteProductService = async ({ id }) => {
   }
 };
 
-exports.getProductsService = async ({ page, size }) => {
+exports.getBookingsService = async ({ page, size }) => {
   const response = {
     code: 200,
     status: 'Success',
-    message: 'Fetch product list successfully',
+    message: 'Fetch booking list successfully',
     data: {},
   };
 
@@ -140,27 +140,27 @@ exports.getProductsService = async ({ page, size }) => {
     const pageNumber = parseInt(page) || 1;
     const limit = parseInt(size) || 10;
 
-    const totalDocuments = await Product.countDocuments({
+    const totalDocuments = await Booking.countDocuments({
       isDelete: false,
     });
     const totalPage = Math.ceil(totalDocuments / limit);
 
-    const products = await Product.find({ isDelete: false }).limit(10)
+    const bookings = await Booking.find({ isDelete: false }).limit(10)
       /* .select('-__v -isDelete')
       .sort({ _id: -1 })
       .skip((pageNumber - 1) * limit)
       .limit(limit)
       .lean(); */
 
-    if (products.length === 0) {
+    if (bookings.length === 0) {
       response.code = 404;
       response.status = 'Failed';
-      response.message = 'No product data found';
+      response.message = 'No booking data found';
       return response;
     }
 
     response.data = {
-      products,
+      bookings,
       currentPage: pageNumber,
       totalDocuments,
       totalPage,
@@ -175,11 +175,11 @@ exports.getProductsService = async ({ page, size }) => {
   }
 };
 
-exports.searchProductService = async ({ q }) => {
+exports.searchBookingService = async ({ q }) => {
   const response = {
     code: 200,
     status: 'success',
-    message: 'Product data found successfully',
+    message: 'Booking data found successfully',
     data: {},
   };
 
@@ -193,16 +193,16 @@ exports.searchProductService = async ({ q }) => {
       };
     }
 
-    const products = await Product.find(query)
+    const bookings = await Booking.find(query)
       .select('-__v -isDelete')
       .sort({ _id: -1 });
 
-    if (products.length === 0) {
+    if (bookings.length === 0) {
       response.code = 404;
       response.status = 'failed';
-      response.message = 'No product data found';
+      response.message = 'No booking data found';
     }
-    response.data.products = products;
+    response.data.bookings = bookings;
     return response;
   } catch (error) {
     response.code = 500;
@@ -212,27 +212,27 @@ exports.searchProductService = async ({ q }) => {
   }
 };
 
-exports.getProductService = async ({ id }) => {
+exports.getBookingService = async ({ id }) => {
   const response = {
     code: 200,
     status: 'success',
-    message: 'Fetch deatiled product successfully',
+    message: 'Fetch deatiled booking successfully',
     data: {},
   };
 
   try {
-    const product = await Product.findOne({
+    const booking = await Booking.findOne({
       _id: id,
       isDelete: false,
     })
       .select('-__v -isDelete')
-    if (!product) {
+    if (!booking) {
       response.code = 404;
       response.status = 'failed';
-      response.message = 'No product found';
+      response.message = 'No booking found';
       return response;
     }
-    response.data.product = product;
+    response.data.booking = booking;
     return response;
   } catch (error) {
     response.code = 500;
@@ -242,29 +242,29 @@ exports.getProductService = async ({ id }) => {
   }
 };
 
-exports.filterProductService = async ({ q }) => {
+exports.filterBookingService = async ({ q }) => {
   const response = {
     code: 200,
     status: 'Success',
-    message: 'Product data found successfully',
+    message: 'Booking data found successfully',
     data: {},
   };
 
   try {
 
-    const apiFeatures  = new APIFeatures( Product.find().select('-__v -isDelete'), q).filter()
+    const apiFeatures  = new APIFeatures( Booking.find().select('-__v -isDelete'), q).filter()
 
-    let products = await apiFeatures.query;
-    let filteredProductsCount = products.length;
+    let bookings = await apiFeatures.query;
+    let filteredBookingsCount = bookings.length;
 
-    if (products.length === 0) {
+    if (bookings.length === 0) {
       response.code = 404;
       response.status = 'Failed';
-      response.message = 'No product data found';
+      response.message = 'No booking data found';
     }
 
-    response.data.products = products;
-    response.data.filteredProductsCount = filteredProductsCount;
+    response.data.bookings = bookings;
+    response.data.filteredBookingsCount = filteredBookingsCount;
     return response;
 
   } catch (error) {
@@ -278,7 +278,7 @@ exports.filterProductService = async ({ q }) => {
 };
 
 // Create new review   =>   /api/v1/review
-exports.createProductReview = async ({body, req}) => {
+exports.createBookingReview = async ({body, req}) => {
   const response = {
     code: 200,
     status: 'Success',
@@ -287,7 +287,7 @@ exports.createProductReview = async ({body, req}) => {
 
 
   try {
-    const { rating, comment, productId } = body;
+    const { rating, comment, bookingId } = body;
 
     const review = {
       user: req.user._id,
@@ -296,20 +296,20 @@ exports.createProductReview = async ({body, req}) => {
       comment
     }
 
-    const product = await Product.findById(productId);
-    if (!product) {
+    const booking = await Booking.findById(bookingId);
+    if (!booking) {
       response.code = 402;
       response.status = 'Failed';
       response.message = 'No Data found by this ID';
       return response;    
     }
 
-    const isReviewed = product.reviews.find(
+    const isReviewed = booking.reviews.find(
       r => r.user.toString() === req.user._id.toString()
     )
 
     if (isReviewed) {
-      product.reviews.forEach(review => {
+      booking.reviews.forEach(review => {
         if (review.user.toString() === req.user._id.toString()) {
           review.comment = comment;
           review.rating = rating;
@@ -317,12 +317,12 @@ exports.createProductReview = async ({body, req}) => {
       })
 
     } else {
-      product.reviews.push(review);
-      product.numOfReviews = product.reviews.length
+      booking.reviews.push(review);
+      booking.numOfReviews = booking.reviews.length
     }
-    product.ratings = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length
+    booking.ratings = booking.reviews.reduce((acc, item) => item.rating + acc, 0) / booking.reviews.length
 
-    await product.save({ validateBeforeSave: false });
+    await booking.save({ validateBeforeSave: false });
 
     return response;
 
@@ -337,16 +337,16 @@ exports.createProductReview = async ({body, req}) => {
 
 exports.deleteReviewService = async ({ id }) => {
   
-  const product = await Product.findById(id);
+  const booking = await Booking.findById(id);
 
-  if (!product) {
+  if (!booking) {
     response.code = 402;
     response.status = 'Failed';
     response.message = 'No Data found by this ID';
     return response; 
   }
-  const reviews = product.reviews.filter(review => review._id.toString() !== req.query.id.toString());
-  await Product.findByIdAndUpdate(req.query.productId, {
+  const reviews = booking.reviews.filter(review => review._id.toString() !== req.query.id.toString());
+  await Booking.findByIdAndUpdate(req.query.bookingId, {
     reviews,
     ratings,
     numOfReviews

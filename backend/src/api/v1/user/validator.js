@@ -4,7 +4,7 @@ const { check, param } = require('express-validator');
 const validatePhone = require('../utils/validatePhone');
 const validateEmail = require('../utils/validateEmail');
 
-exports.addUserValidator = [
+exports.registerUserValidator = [
   check('firstName').trim().notEmpty().withMessage('First Name is required'),
 
   check('lastName').trim().notEmpty().withMessage('Last Name is required'),

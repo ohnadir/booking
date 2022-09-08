@@ -1,83 +1,83 @@
 const {
-  addProductService,
-  updateProductService,
-  deleteProductService,
-  getProductsService,
-  searchProductService,
-  getProductService,
-  filterProductService,
-  createProductReview,
+  addBookingService,
+  updateBookingService,
+  deleteBookingService,
+  getBookingsService,
+  searchBookingService,
+  getBookingService,
+  filterBookingService,
+  createBookingReview,
   deleteReviewService
 } = require('./service');
 
-exports.addProduct = async (req, res) => {
-  const { status, code, message } = await addProductService({
+exports.addBooking = async (req, res) => {
+  const { status, code, message } = await addBookingService({
     // _id:req.user._id,
     ...req.body,
   });
   res.status(code).json({ code, status, message });
 };
 
-exports.updateProduct = async (req, res) => {
-  const { status, code, message, data } = await updateProductService({
+exports.updateBooking = async (req, res) => {
+  const { status, code, message, data } = await updateBookingService({
     ...req.params,
     ...req.body,
   });
-  if (data.product) {
+  if (data.booking) {
     return res.status(code).json({ code, status, message, data });
   }
   res.status(code).json({ code, status, message });
 };
 
-exports.deleteProduct = async (req, res) => {
-  const { status, code, message, data } = await deleteProductService({
+exports.deleteBooking = async (req, res) => {
+  const { status, code, message, data } = await deleteBookingService({
     ...req.params,
   });
   res.status(code).json({ code, status, message, data });
 };
 
-exports.getProducts = async (req, res) => {
-  const { status, code, message, data } = await getProductsService({
+exports.getBookings = async (req, res) => {
+  const { status, code, message, data } = await getBookingsService({
     ...req.query,
   });
-  if (data.products) {
+  if (data.bookings) {
     return res.status(code).json({ code, status, message, data });
   }
   res.status(code).json({ code, status, message });
 };
 
-exports.searchProduct = async (req, res) => {
-  const { status, code, message, data } = await searchProductService({
+exports.searchBooking = async (req, res) => {
+  const { status, code, message, data } = await searchBookingService({
     ...req.query,
   });
-  if (data.products && data.products.length > 0) {
+  if (data.bookings && data.bookings.length > 0) {
     return res.status(code).json({ code, status, message, data });
   }
   res.status(code).json({ code, status, message });
 };
 
-exports.getProduct = async (req, res) => {
-  const { status, code, message, data } = await getProductService({
+exports.getBooking = async (req, res) => {
+  const { status, code, message, data } = await getBookingService({
     ...req.params,
   });
-  if (data.product) {
+  if (data.booking) {
     return res.status(code).json({ code, status, message, data });
   }
   res.status(code).json({ code, status, message });
 };
 
-exports.filterProduct = async (req, res) => {
-  const { status, code, message, data } = await filterProductService({
+exports.filterBooking = async (req, res) => {
+  const { status, code, message, data } = await filterBookingService({
     ...req.query,
   });
-  if (data.products && data.products.length > 0) {
+  if (data.bookings && data.bookings.length > 0) {
     return res.status(code).json({ code, status, message, data });
   }
   res.status(code).json({ code, status, message });
 };
 
-exports.createProductReview = async (req, res) => {
-  const { status, code, message, data } = await createProductReview({
+exports.createBookingReview = async (req, res) => {
+  const { status, code, message, data } = await createBookingReview({
     body: req.body,
     req
   });
