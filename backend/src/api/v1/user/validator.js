@@ -5,10 +5,15 @@ const validatePhone = require('../utils/validatePhone');
 const validateEmail = require('../utils/validateEmail');
 
 exports.registerUserValidator = [
-  check('firstName').trim().notEmpty().withMessage('First Name is required'),
+  check('firstName')
+  .trim()
+  .notEmpty()
+  .withMessage('First Name is required'),
 
-  check('lastName').trim().notEmpty().withMessage('Last Name is required'),
-  check('password').trim().notEmpty().withMessage('Password is required'),
+  check('lastName')
+  .trim()
+  .notEmpty()
+  .withMessage('Last Name is required'),
 
   check('email')
     .trim()
@@ -18,6 +23,17 @@ exports.registerUserValidator = [
         throw 'Invalid email';
       }
     }),
+  
+  check('country')
+    .trim()
+    .notEmpty()
+    .withMessage('Country is required'),
+
+  check('city')
+    .trim()
+    .notEmpty()
+    .withMessage('City is required'),
+  
   check('phone')
     .trim()
     .notEmpty().withMessage('Phone Number is required')
@@ -28,7 +44,14 @@ exports.registerUserValidator = [
           throw invalidPhone;
         }
       }
-    })
+    }),
+  check('password')
+  .trim()
+  .notEmpty()
+  .withMessage('Password is required'),
+
+  
+  
 ];
 
 exports.updateUserValidator = [

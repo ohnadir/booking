@@ -1,6 +1,4 @@
 const { Hotel } = require('../models');
-// const shortid = require("shortid");
-const slugify = require("slugify");
 
 exports.addHotelService = async ({ name, hotelImage, createdBy, _id, body }) => {
   const response = {
@@ -20,7 +18,6 @@ exports.addHotelService = async ({ name, hotelImage, createdBy, _id, body }) => 
 
     const newHotel = new Hotel({
       name,
-      slug: slugify(name),
       hotelImage,
       createdBy
     });
@@ -123,7 +120,7 @@ exports.deleteHotelService = async ({ id }) => {
   }
 };
 
-exports.gethotelsService = async () => {
+exports.getHotelsService = async () => {
   const response = {
     code: 200,
     status: 'success',
