@@ -3,7 +3,7 @@ const { check, param } = require('express-validator');
 
 
 exports.addRoomValidator = [
-  check('name').trim().notEmpty().withMessage('Name is required'),
+  check('title').trim().notEmpty().withMessage('Title is required'),
 
   check('price')
     .trim()
@@ -16,13 +16,24 @@ exports.addRoomValidator = [
         }
       }
     }),
-    check('quantity')
+    check('maxPeople')
     .trim()
     .notEmpty()
-    .withMessage('Quantity is required')
-    .custom(async (quantity) => {
-      if (quantity) {
-        if (isNaN(quantity)) {
+    .withMessage('Max People is required')
+    .custom(async (maxPeople) => {
+      if (maxPeople) {
+        if (isNaN(maxPeople)) {
+          throw "Quantity is must Numeric Value"
+        }
+      }
+    }),
+    check('roomNumbers')
+    .trim()
+    .notEmpty()
+    .withMessage('Room Numbers is required')
+    .custom(async (roomNumbers) => {
+      if (roomNumbers) {
+        if (isNaN(roomNumbers)) {
           throw "Quantity is must Numeric Value"
         }
       }
@@ -31,9 +42,6 @@ exports.addRoomValidator = [
 
 exports.updateRoomValidator = [
   check('price')
-    .trim()
-    .notEmpty()
-    .withMessage('Price is required')
     .custom(async (price) => {
       if (price) {
         if (isNaN(price)) {
@@ -41,10 +49,18 @@ exports.updateRoomValidator = [
         }
       }
     }),
-    check('quantity')
-    .custom(async (quantity) => {
-      if (quantity) {
-        if (isNaN(quantity)) {
+    check('maxPeople')
+    .custom(async (maxPeople) => {
+      if (maxPeople) {
+        if (isNaN(maxPeople)) {
+          throw "Quantity is must Numeric Value"
+        }
+      }
+    }),
+    check('roomNumbers')
+    .custom(async (roomNumbers) => {
+      if (roomNumbers) {
+        if (isNaN(roomNumbers)) {
           throw "Quantity is must Numeric Value"
         }
       }
