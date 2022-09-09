@@ -1,18 +1,18 @@
-const { Booking } = require('../models');
+const { Room } = require('../models');
 // const shortid = require("shortid");
 const slugify = require("slugify");
 const ErrorMiddleware = require('../middleware/errors')
 const APIFeatures = require('../utils/APIFeatures')
 
-exports.addBookingService = async ({ name,price,quantity,desc, bookingPictures,category,  _id }) => {
+exports.addRoomService = async ({ name,price,quantity,desc, roomPictures,category,  _id }) => {
   const response = {
     code: 201,
     status: 'Success',
-    message: 'Booking added successfully',
+    message: 'Room added successfully',
   };
 
   try {
-    const isNameExist = await Booking.findOne({ name });
+    const isNameExist = await Room.findOne({ name });
     if (isNameExist) {
       response.code = 422;
       response.status = 'Failed';
@@ -20,17 +20,17 @@ exports.addBookingService = async ({ name,price,quantity,desc, bookingPictures,c
       return response;
     }
 
-    const newBooking = new Booking({
+    const newRoom = new Room({
       name,
       slug: slugify(name),
       price,
       quantity,
       desc,
-      bookingPictures,
+      roomPictures,
       category,
       // createdBy: req.user._id,
     });
-    await newBooking.save();
+    await newRoom.save();
     return response;
     
 
@@ -42,7 +42,7 @@ exports.addBookingService = async ({ name,price,quantity,desc, bookingPictures,c
   }
 };
 
-exports.updateBookingService = async ({
+exports.updateRoomService = async ({
   id,
   name,
   price,
@@ -51,27 +51,27 @@ exports.updateBookingService = async ({
   const response = {
     code: 200,
     status: 'Success',
-    message: 'Booking updated successfully',
+    message: 'Room updated successfully',
     data: {},
   };
 
   try {
-    const booking = await Booking.findOne({
+    const room = await Room.findOne({
       _id: id,
       isDelete: false,
     }).exec();
-    if (!booking) {
+    if (!room) {
       response.code = 422;
       response.status = 'failed';
-      response.message = 'No booking data found';
+      response.message = 'No room data found';
       return response;
     }
 
-    const isNameExist = await Booking.findOne({ name });
+    const isNameExist = await Room.findOne({ name });
     if (
       isNameExist &&
       name === isNameExist.name &&
-      String(booking._id) !== String(isNameExist._id)
+      String(room._id) !== String(isNameExist._id)
     ) {
       response.code = 422;
       response.status = 'failed';
@@ -79,13 +79,13 @@ exports.updateBookingService = async ({
       return response;
     }
 
-    booking.name = name ? name : booking.name;
-    booking.price = price ? price : booking.price;
-    booking.desc = desc ? desc : booking.desc;
+    room.name = name ? name : room.name;
+    room.price = price ? price : room.price;
+    room.desc = desc ? desc : room.desc;
 
-    await booking.save();
+    await room.save();
 
-    response.data.booking = booking;
+    response.data.room = room;
     return response;
     
   } catch (error) {
@@ -96,28 +96,28 @@ exports.updateBookingService = async ({
   }
 };
 
-exports.deleteBookingService = async ({ id }) => {
+exports.deleteRoomService = async ({ id }) => {
   const response = {
     code: 200,
     status: 'success',
-    message: 'Delete booking successfully',
+    message: 'Delete room successfully',
   };
 
   try {
-    const booking = await Booking.findOne({
+    const room = await Room.findOne({
       _id: id,
       isDelete: false,
     });
-    if (!booking) {
+    if (!room) {
       response.code = 404;
       response.status = 'failed';
-      response.message = 'No booking data found';
+      response.message = 'No room data found';
       return response;
     }
 
-    booking.isDelete = true;
-    booking.deletedAt = Date.now();
-    await booking.save();
+    room.isDelete = true;
+    room.deletedAt = Date.now();
+    await room.save();
 
     return response;
   } catch (error) {
@@ -128,11 +128,11 @@ exports.deleteBookingService = async ({ id }) => {
   }
 };
 
-exports.getBookingsService = async ({ page, size }) => {
+exports.getRoomsService = async ({ page, size }) => {
   const response = {
     code: 200,
     status: 'Success',
-    message: 'Fetch booking list successfully',
+    message: 'Fetch room list successfully',
     data: {},
   };
 
@@ -140,27 +140,27 @@ exports.getBookingsService = async ({ page, size }) => {
     const pageNumber = parseInt(page) || 1;
     const limit = parseInt(size) || 10;
 
-    const totalDocuments = await Booking.countDocuments({
+    const totalDocuments = await Room.countDocuments({
       isDelete: false,
     });
     const totalPage = Math.ceil(totalDocuments / limit);
 
-    const bookings = await Booking.find({ isDelete: false }).limit(10)
+    const rooms = await Room.find({ isDelete: false }).limit(10)
       /* .select('-__v -isDelete')
       .sort({ _id: -1 })
       .skip((pageNumber - 1) * limit)
       .limit(limit)
       .lean(); */
 
-    if (bookings.length === 0) {
+    if (rooms.length === 0) {
       response.code = 404;
       response.status = 'Failed';
-      response.message = 'No booking data found';
+      response.message = 'No room data found';
       return response;
     }
 
     response.data = {
-      bookings,
+      rooms,
       currentPage: pageNumber,
       totalDocuments,
       totalPage,
@@ -175,11 +175,11 @@ exports.getBookingsService = async ({ page, size }) => {
   }
 };
 
-exports.searchBookingService = async ({ q }) => {
+exports.searchRoomService = async ({ q }) => {
   const response = {
     code: 200,
     status: 'success',
-    message: 'Booking data found successfully',
+    message: 'Room data found successfully',
     data: {},
   };
 
@@ -193,16 +193,16 @@ exports.searchBookingService = async ({ q }) => {
       };
     }
 
-    const bookings = await Booking.find(query)
+    const rooms = await Room.find(query)
       .select('-__v -isDelete')
       .sort({ _id: -1 });
 
-    if (bookings.length === 0) {
+    if (rooms.length === 0) {
       response.code = 404;
       response.status = 'failed';
-      response.message = 'No booking data found';
+      response.message = 'No room data found';
     }
-    response.data.bookings = bookings;
+    response.data.rooms = rooms;
     return response;
   } catch (error) {
     response.code = 500;
@@ -212,27 +212,27 @@ exports.searchBookingService = async ({ q }) => {
   }
 };
 
-exports.getBookingService = async ({ id }) => {
+exports.getRoomService = async ({ id }) => {
   const response = {
     code: 200,
     status: 'success',
-    message: 'Fetch deatiled booking successfully',
+    message: 'Fetch deatiled room successfully',
     data: {},
   };
 
   try {
-    const booking = await Booking.findOne({
+    const room = await Room.findOne({
       _id: id,
       isDelete: false,
     })
       .select('-__v -isDelete')
-    if (!booking) {
+    if (!room) {
       response.code = 404;
       response.status = 'failed';
-      response.message = 'No booking found';
+      response.message = 'No room found';
       return response;
     }
-    response.data.booking = booking;
+    response.data.room = room;
     return response;
   } catch (error) {
     response.code = 500;
@@ -242,29 +242,29 @@ exports.getBookingService = async ({ id }) => {
   }
 };
 
-exports.filterBookingService = async ({ q }) => {
+exports.filterRoomService = async ({ q }) => {
   const response = {
     code: 200,
     status: 'Success',
-    message: 'Booking data found successfully',
+    message: 'Room data found successfully',
     data: {},
   };
 
   try {
 
-    const apiFeatures  = new APIFeatures( Booking.find().select('-__v -isDelete'), q).filter()
+    const apiFeatures  = new APIFeatures( Room.find().select('-__v -isDelete'), q).filter()
 
-    let bookings = await apiFeatures.query;
-    let filteredBookingsCount = bookings.length;
+    let rooms = await apiFeatures.query;
+    let filteredRoomsCount = rooms.length;
 
-    if (bookings.length === 0) {
+    if (rooms.length === 0) {
       response.code = 404;
       response.status = 'Failed';
-      response.message = 'No booking data found';
+      response.message = 'No room data found';
     }
 
-    response.data.bookings = bookings;
-    response.data.filteredBookingsCount = filteredBookingsCount;
+    response.data.rooms = rooms;
+    response.data.filteredRoomsCount = filteredRoomsCount;
     return response;
 
   } catch (error) {
@@ -278,7 +278,7 @@ exports.filterBookingService = async ({ q }) => {
 };
 
 // Create new review   =>   /api/v1/review
-exports.createBookingReview = async ({body, req}) => {
+exports.createRoomReview = async ({body, req}) => {
   const response = {
     code: 200,
     status: 'Success',
@@ -287,7 +287,7 @@ exports.createBookingReview = async ({body, req}) => {
 
 
   try {
-    const { rating, comment, bookingId } = body;
+    const { rating, comment, roomId } = body;
 
     const review = {
       user: req.user._id,
@@ -296,20 +296,20 @@ exports.createBookingReview = async ({body, req}) => {
       comment
     }
 
-    const booking = await Booking.findById(bookingId);
-    if (!booking) {
+    const room = await Room.findById(roomId);
+    if (!room) {
       response.code = 402;
       response.status = 'Failed';
       response.message = 'No Data found by this ID';
       return response;    
     }
 
-    const isReviewed = booking.reviews.find(
+    const isReviewed = room.reviews.find(
       r => r.user.toString() === req.user._id.toString()
     )
 
     if (isReviewed) {
-      booking.reviews.forEach(review => {
+      room.reviews.forEach(review => {
         if (review.user.toString() === req.user._id.toString()) {
           review.comment = comment;
           review.rating = rating;
@@ -317,12 +317,12 @@ exports.createBookingReview = async ({body, req}) => {
       })
 
     } else {
-      booking.reviews.push(review);
-      booking.numOfReviews = booking.reviews.length
+      room.reviews.push(review);
+      room.numOfReviews = room.reviews.length
     }
-    booking.ratings = booking.reviews.reduce((acc, item) => item.rating + acc, 0) / booking.reviews.length
+    room.ratings = room.reviews.reduce((acc, item) => item.rating + acc, 0) / room.reviews.length
 
-    await booking.save({ validateBeforeSave: false });
+    await room.save({ validateBeforeSave: false });
 
     return response;
 
@@ -337,16 +337,16 @@ exports.createBookingReview = async ({body, req}) => {
 
 exports.deleteReviewService = async ({ id }) => {
   
-  const booking = await Booking.findById(id);
+  const room = await Room.findById(id);
 
-  if (!booking) {
+  if (!room) {
     response.code = 402;
     response.status = 'Failed';
     response.message = 'No Data found by this ID';
     return response; 
   }
-  const reviews = booking.reviews.filter(review => review._id.toString() !== req.query.id.toString());
-  await Booking.findByIdAndUpdate(req.query.bookingId, {
+  const reviews = room.reviews.filter(review => review._id.toString() !== req.query.id.toString());
+  await Room.findByIdAndUpdate(req.query.roomId, {
     reviews,
     ratings,
     numOfReviews

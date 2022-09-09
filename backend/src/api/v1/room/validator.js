@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { check, param } = require('express-validator');
 
 
-exports.addBookingValidator = [
+exports.addRoomValidator = [
   check('name').trim().notEmpty().withMessage('Name is required'),
 
   check('price')
@@ -29,7 +29,7 @@ exports.addBookingValidator = [
     })
 ];
 
-exports.updateBookingValidator = [
+exports.updateRoomValidator = [
   check('price')
     .trim()
     .notEmpty()
@@ -54,7 +54,7 @@ exports.updateBookingValidator = [
 exports.idValidator = [
   param('id').custom(async (id) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      throw 'No Booking data found by the id';
+      throw 'No Room data found by the id';
     }
   }),
 ];

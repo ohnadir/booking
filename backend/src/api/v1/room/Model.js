@@ -2,7 +2,7 @@ const { Schema, model } = require('mongoose');
 const mongoose = require("mongoose");
 
 
-const bookingSchema = Schema(
+const roomSchema = Schema(
   {
     name: { type: String, required: true, trim: true },
     slug: { 
@@ -12,7 +12,7 @@ const bookingSchema = Schema(
     },
     desc: { type: String, required: true},
     price: { type: String, required: true},
-    bookingPictures: [],
+    roomPictures: [],
     reviews: [
       { userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user' } },
       {review: String}
@@ -32,4 +32,4 @@ const bookingSchema = Schema(
   { timestamps: true }
 );
 
-module.exports = model('booking', bookingSchema);
+module.exports = model('Room', roomSchema);

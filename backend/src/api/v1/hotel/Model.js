@@ -2,7 +2,7 @@ const { Schema, model } = require('mongoose');
 const mongoose = require("mongoose");
 
 
-const categorySchema = Schema(
+const hotelSchema = Schema(
     {
         name: {
           type: String,
@@ -16,7 +16,7 @@ const categorySchema = Schema(
         type: {
           type: String,
         },
-        categoryImage: { type: String },
+        hotelImage: { type: String },
         createdBy: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Admin",
@@ -25,4 +25,4 @@ const categorySchema = Schema(
       { timestamps: true }
 );
 
-module.exports = model('category', categorySchema);
+module.exports = model('Hotel', hotelSchema);

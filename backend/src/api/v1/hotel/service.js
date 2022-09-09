@@ -1,16 +1,16 @@
-const { Category } = require('../models');
+const { Hotel } = require('../models');
 // const shortid = require("shortid");
 const slugify = require("slugify");
 
-exports.addCategoryService = async ({ name, categoryImage, createdBy, _id, body }) => {
+exports.addHotelService = async ({ name, hotelImage, createdBy, _id, body }) => {
   const response = {
     code: 201,
     status: 'Success',
-    message: 'Category added successfully',
+    message: 'Hotel added successfully',
   };
 
   try {
-    const isNameExist = await Category.findOne({ name });
+    const isNameExist = await Hotel.findOne({ name });
     if (isNameExist) {
       response.code = 422;
       response.status = 'Failed';
@@ -18,15 +18,15 @@ exports.addCategoryService = async ({ name, categoryImage, createdBy, _id, body 
       return response;
     }
 
-    const newCategory = new Category({
+    const newHotel = new Hotel({
       name,
       slug: slugify(name),
-      categoryImage,
+      hotelImage,
       createdBy
     });
 
-    await newCategory.save();
-    response.data = newCategory
+    await newHotel.save();
+    response.data = newHotel
     return response;
 
   } catch (error) {
@@ -37,36 +37,36 @@ exports.addCategoryService = async ({ name, categoryImage, createdBy, _id, body 
   }
 };
 
-exports.updateCategoryService = async ({
+exports.updateHotelService = async ({
   id,
   name,
   slug,
-  categoryImage
+  hotelImage
 }) => {
   const response = {
     code: 200,
     status: 'Success',
-    message: 'Category updated successfully',
+    message: 'Hotel updated successfully',
     data: {},
   };
 
   try {
-    const category = await Category.findOne({
+    const hotel = await Hotel.findOne({
       _id: id,
       isDelete: false,
     }).exec();
-    if (!category) {
+    if (!hotel) {
       response.code = 422;
       response.status = 'failed';
-      response.message = 'No category data found';
+      response.message = 'No hotel data found';
       return response;
     }
 
-    const isNameExist = await Category.findOne({ name });
+    const isNameExist = await Hotel.findOne({ name });
     if (
       isNameExist &&
       name === isNameExist.name &&
-      String(category._id) !== String(isNameExist._id)
+      String(hotel._id) !== String(isNameExist._id)
     ) {
       response.code = 422;
       response.status = 'Failed';
@@ -74,13 +74,13 @@ exports.updateCategoryService = async ({
       return response;
     }
 
-    category.name = name ? name : category.name;
-    category.slug = slug ? slug : category.slug;
-    category.categoryImage = categoryImage ? categoryImage : category.categoryImage;
+    hotel.name = name ? name : hotel.name;
+    hotel.slug = slug ? slug : hotel.slug;
+    hotel.hotelImage = hotelImage ? hotelImage : hotel.hotelImage;
 
-    await category.save();
+    await hotel.save();
 
-    response.data.category = category;
+    response.data.hotel = hotel;
     return response;
     
   } catch (error) {
@@ -91,28 +91,28 @@ exports.updateCategoryService = async ({
   }
 };
 
-exports.deleteCategoryService = async ({ id }) => {
+exports.deleteHotelService = async ({ id }) => {
   const response = {
     code: 200,
     status: 'success',
-    message: 'Delete category successfully',
+    message: 'Delete hotel successfully',
   };
 
   try {
-    const category = await Category.findOne({
+    const hotel = await Hotel.findOne({
       _id: id,
       isDelete: false,
     });
-    if (!category) {
+    if (!hotel) {
       response.code = 404;
       response.status = 'failed';
-      response.message = 'No category data found';
+      response.message = 'No hotel data found';
       return response;
     }
 
-    category.isDelete = true;
-    category.deletedAt = Date.now();
-    await category.save();
+    hotel.isDelete = true;
+    hotel.deletedAt = Date.now();
+    await hotel.save();
 
     return response;
   } catch (error) {
@@ -123,26 +123,26 @@ exports.deleteCategoryService = async ({ id }) => {
   }
 };
 
-exports.getCategoriesService = async () => {
+exports.gethotelsService = async () => {
   const response = {
     code: 200,
     status: 'success',
-    message: 'Fetch category list successfully',
+    message: 'Fetch hotel list successfully',
     data: {},
   };
 
   try {
   
-    const categories = await Category.find({})
+    const hotels = await Hotel.find({})
 
-    if (categories.length === 0) {
+    if (hotels.length === 0) {
       response.code = 404;
       response.status = 'Failed';
-      response.message = 'No Category data found';
+      response.message = 'No Hotel data found';
       return response;
     }
 
-    response.data.categories = categories;
+    response.data.hotels = hotels;
     return response;
 
   } catch (error) {

@@ -1,10 +1,8 @@
 const User = require('../user/Model');
-const Booking = require('../booking/Model');
-const Category = require('../category/Model');
-const Order = require('../order/Model');
+const Room = require('../room/Model');
+const Hotel = require('../hotel/Model');
 module.exports = {
   User,
-  Booking,
-  Category,
-  Order
+  Room,
+  Hotel
 };
