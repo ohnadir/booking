@@ -33,8 +33,8 @@ router.delete('/:id', idValidator, validationResult, deleteHotel);
 
 router.get('/', getHotels);
 
-router.get('/search', searchHotel);
+// router.get('/search', searchHotel);
 
-router.get('/:id', idValidator, validationResult, getHotel);
+// router.get('/:id', idValidator, validationResult, getHotel);
 
 module.exports = router;

@@ -27,17 +27,17 @@ exports.addRoomValidator = [
         }
       }
     }),
-    check('roomNumbers')
+    /* check('roomNumbers')
     .trim()
     .notEmpty()
     .withMessage('Room Numbers is required')
     .custom(async (roomNumbers) => {
       if (roomNumbers) {
         if (isNaN(roomNumbers)) {
-          throw "Quantity is must Numeric Value"
+          throw "Room Numbers is must Numeric Value"
         }
       }
-    })
+    }) */
 ];
 
 exports.updateRoomValidator = [
@@ -57,14 +57,14 @@ exports.updateRoomValidator = [
         }
       }
     }),
-    check('roomNumbers')
+    /* check('roomNumbers')
     .custom(async (roomNumbers) => {
       if (roomNumbers) {
         if (isNaN(roomNumbers)) {
           throw "Quantity is must Numeric Value"
         }
       }
-    })
+    }) */
 ];
 
 exports.idValidator = [

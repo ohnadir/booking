@@ -10,12 +10,14 @@ const {
   deleteReviewService
 } = require('./service');
 
-exports.addRoom = async (req, res) => {
-  const { status, code, message } = await addRoomService({
+exports.addRoom = async (req, res, next) => {
+  const { } = await addRoomService({
     // _id:req.user._id,
-    ...req.body,
+    body:req.body,
+    hotelId: req.params.id,
+    next
   });
-  res.status(code).json({ code, status, message });
+  res.status(code).json({  });
 };
 
 exports.updateRoom = async (req, res) => {

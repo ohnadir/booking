@@ -14,5 +14,5 @@ module.exports = {
     mongoose
       .connect(process.env.CONNECTION_URL)
       .then(console.log(`DB connection Successfully`))
-      .catch((error) => console.log(`Error to connect DB: ${error.message}`)),
+      .catch((error) => console.log(`Error to connect DB: ${error.message}` )),
 };

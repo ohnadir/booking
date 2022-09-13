@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const csrf = require('csurf');
 const cookieParser = require('cookie-parser');
-const bodyParser = require("body-parser");
+// const bodyParser = require("body-parser");
 const morgan = require('morgan');
 const { readdirSync } = require('fs');
 
@@ -30,7 +30,7 @@ readdirSync('./src/api/v1/routes').map((route) =>
 app.use(csrfProtection);
 
 // Handle Middleware Error
-app.use(errorMiddleware)
+app.use(errorMiddleware);
 
 app.get('/api/csrf-token', (req, res) => {
   res.json({ csrfToken: req.csrfToken() });

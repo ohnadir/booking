@@ -1,6 +1,7 @@
 const { Hotel } = require('../models');
 
-exports.addHotelService = async ({ name, hotelImage, createdBy, _id, body }) => {
+exports.addHotelService = async ({ body }) => {
+  const {name, type, city, address, distance, title, desc, cheapestPrice} = body;
   const response = {
     code: 201,
     status: 'Success',
@@ -18,8 +19,13 @@ exports.addHotelService = async ({ name, hotelImage, createdBy, _id, body }) => 
 
     const newHotel = new Hotel({
       name,
-      hotelImage,
-      createdBy
+      type,
+      city,
+      address,
+      distance,
+      title,
+      desc,
+      cheapestPrice
     });
 
     await newHotel.save();

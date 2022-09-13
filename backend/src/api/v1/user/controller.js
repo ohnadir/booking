@@ -17,7 +17,6 @@ const {
 exports.registerUser = async (req, res) => {
   const { status, code, message } = await registerUserService({
     body: req.body,
-    ...req.body,
     res: res
   });
   res.status(code).json({ code, status, message });

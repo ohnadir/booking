@@ -4,7 +4,7 @@ const sendToken = require('../utils/jwtToken')
 const sendEmail = require('../utils/sendEmail')
 
 exports.registerUserService = async ({ body, res }) => {
-  const { firstName, lastName, password, email, phone, role } = body;
+  const { firstName, lastName, email, country, city, phone, password, role } = body;
   
   const response = {
     code: 201,
@@ -35,6 +35,8 @@ exports.registerUserService = async ({ body, res }) => {
       firstName,
       lastName,
       email,
+      country,
+      city,
       password,
       phone, 
       role

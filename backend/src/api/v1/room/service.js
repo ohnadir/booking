@@ -1,70 +1,53 @@
-const { Room } = require('../models');
-// const shortid = require("shortid");
-const slugify = require("slugify");
-const ErrorMiddleware = require('../middleware/errors')
+const { Room, Hotel } = require('../models');
+const ErrorHandler = require('../utils/ErrorHandler')
+const catchAsyncErrors = require('../middleware/catchAsyncErrors')
 const APIFeatures = require('../utils/APIFeatures')
 
-exports.addRoomService = async ({ name,price,quantity,desc, roomPictures,category,  _id }) => {
-  const response = {
-    code: 201,
-    status: 'Success',
-    message: 'Room added successfully',
-  };
+exports.addRoom= catchAsyncErrors(async (req, res, next) => {
+  const { title, price , maxPeople, desc, roomNumbers } = req.body;
+  const hotelId = req.params.id;
 
   try {
-    const isNameExist = await Room.findOne({ name });
-    if (isNameExist) {
-      response.code = 422;
-      response.status = 'Failed';
-      response.message = 'Name already taken';
-      return response;
+    const isTitleExist   = await Room.findOne({ title });
+    if (isTitleExist) {
+      return next(new ErrorHandler('Title Already Taken', 422))
     }
 
-    const newRoom = new Room({
-      name,
-      slug: slugify(name),
+    const room = new Room({
+      title,
       price,
-      quantity,
+      maxPeople,
       desc,
-      roomPictures,
-      category,
-      // createdBy: req.user._id,
+      roomNumbers
     });
-    await newRoom.save();
-    return response;
     
+    await room.save();
+    const hotel = await Hotel.findByIdAndUpdate(hotelId, {
+      $push: { rooms: room._id },
+    });
+    await hotel.save();
+    res.status(200).json({
+      Success: true,
+      statusCode:200,
+      message:"Add Room Successfully",
+      data: room
+  })
 
   } catch (error) {
-    response.code = 500;
-    response.status = 'failed';
-    response.message = 'Error. Try again';
-    return response;
+    return next(new ErrorHandler('Error. Try again', 500))
   }
-};
+});
 
-exports.updateRoomService = async ({
-  id,
-  name,
-  price,
-  desc
-}) => {
-  const response = {
-    code: 200,
-    status: 'Success',
-    message: 'Room updated successfully',
-    data: {},
-  };
-
+exports.updateRoom = catchAsyncErrors(async (req, res, next) => {
+    const { name, price, desc} = req.body;
+    const id = req.params.id;
   try {
     const room = await Room.findOne({
       _id: id,
       isDelete: false,
     }).exec();
     if (!room) {
-      response.code = 422;
-      response.status = 'failed';
-      response.message = 'No room data found';
-      return response;
+      return next(new ErrorHandler('No room data found', 422))
     }
 
     const isNameExist = await Room.findOne({ name });
@@ -73,10 +56,7 @@ exports.updateRoomService = async ({
       name === isNameExist.name &&
       String(room._id) !== String(isNameExist._id)
     ) {
-      response.code = 422;
-      response.status = 'failed';
-      response.message = 'Phone number already taken';
-      return response;
+      return next(new ErrorHandler('Phone number already taken', 422))
     }
 
     room.name = name ? name : room.name;
@@ -85,23 +65,20 @@ exports.updateRoomService = async ({
 
     await room.save();
 
-    response.data.room = room;
-    return response;
+    res.status(200).json({
+      Success: true,
+      statusCode:200,
+      message:"Room Update Successfully",
+      data: room
+  })
     
   } catch (error) {
-    response.code = 500;
-    response.status = 'failed';
-    response.message = 'Error. Try again';
-    return response;
+    return next(new ErrorHandler('Error. Try again', 500))
   }
-};
+});
 
-exports.deleteRoomService = async ({ id }) => {
-  const response = {
-    code: 200,
-    status: 'success',
-    message: 'Delete room successfully',
-  };
+exports.deleteRoom = catchAsyncErrors(async (req, res, next) => {
+  const id = req.params.id;
 
   try {
     const room = await Room.findOne({
@@ -109,33 +86,26 @@ exports.deleteRoomService = async ({ id }) => {
       isDelete: false,
     });
     if (!room) {
-      response.code = 404;
-      response.status = 'failed';
-      response.message = 'No room data found';
-      return response;
+      return next(new ErrorHandler('No room data found', 422))
     }
 
     room.isDelete = true;
     room.deletedAt = Date.now();
     await room.save();
 
-    return response;
+    res.status(200).json({
+      Success: true,
+      statusCode:200,
+      message:"Add Room Successfully",
+      data: room
+  })
   } catch (error) {
-    response.code = 500;
-    response.status = 'failed';
-    response.message = 'Error. Try again';
-    return response;
+    return next(new ErrorHandler('Error. Try again', 500))
   }
-};
+});
 
-exports.getRoomsService = async ({ page, size }) => {
-  const response = {
-    code: 200,
-    status: 'Success',
-    message: 'Fetch room list successfully',
-    data: {},
-  };
-
+exports.getRooms = catchAsyncErrors(async (req, res, next) => {
+  const { page, size } = req.query;
   try {
     const pageNumber = parseInt(page) || 1;
     const limit = parseInt(size) || 10;
@@ -153,35 +123,29 @@ exports.getRoomsService = async ({ page, size }) => {
       .lean(); */
 
     if (rooms.length === 0) {
-      response.code = 404;
-      response.status = 'Failed';
-      response.message = 'No room data found';
-      return response;
+      return next(new ErrorHandler('No room data found', 404))
     }
 
-    response.data = {
+    const data = {
       rooms,
       currentPage: pageNumber,
       totalDocuments,
       totalPage,
     };
 
-    return response;
+    res.status(200).json({
+      Success: true,
+      statusCode:200,
+      message:"Fetch all Room Successfully",
+      data: data
+  })
   } catch (error) {
-    response.code = 500;
-    response.status = 'failed';
-    response.message = 'Error. Try again';
-    return response;
+    return next(new ErrorHandler('Error. Try again', 500))
   }
-};
+});
 
-exports.searchRoomService = async ({ q }) => {
-  const response = {
-    code: 200,
-    status: 'success',
-    message: 'Room data found successfully',
-    data: {},
-  };
+exports.searchRoom = catchAsyncErrors(async (req, res, next) => {
+  const q = req.query;
 
   try {
     let query = { isDelete: false };
@@ -198,27 +162,24 @@ exports.searchRoomService = async ({ q }) => {
       .sort({ _id: -1 });
 
     if (rooms.length === 0) {
-      response.code = 404;
-      response.status = 'failed';
-      response.message = 'No room data found';
+      return next(new ErrorHandler('No Room Found', 404))
     }
-    response.data.rooms = rooms;
-    return response;
+    res.status(200).json({
+      Success: true,
+      statusCode:200,
+      message:"Add Room Successfully",
+      data: rooms
+  })
   } catch (error) {
     response.code = 500;
     response.status = 'failed';
     response.message = 'Error. Try again';
     return response;
   }
-};
+});
 
-exports.getRoomService = async ({ id }) => {
-  const response = {
-    code: 200,
-    status: 'success',
-    message: 'Fetch deatiled room successfully',
-    data: {},
-  };
+exports.getRoom = catchAsyncErrors(async (req, res, next) => {
+  const id = req.params.id;
 
   try {
     const room = await Room.findOne({
@@ -227,22 +188,23 @@ exports.getRoomService = async ({ id }) => {
     })
       .select('-__v -isDelete')
     if (!room) {
-      response.code = 404;
-      response.status = 'failed';
-      response.message = 'No room found';
-      return response;
+      return next(new ErrorHandler('No room Found', 404))
     }
-    response.data.room = room;
-    return response;
+    res.status(200).json({
+      Success: true,
+      statusCode:200,
+      message:"Add Room Successfully",
+      data: room
+  })
   } catch (error) {
     response.code = 500;
     response.status = 'failed';
     response.message = 'Error. Try again';
     return response;
   }
-};
+});
 
-exports.filterRoomService = async ({ q }) => {
+exports.filterRoom = catchAsyncErrors(async ({ q }) => {
   const response = {
     code: 200,
     status: 'Success',
@@ -275,10 +237,10 @@ exports.filterRoomService = async ({ q }) => {
     return response;
     
   }
-};
+});
 
 // Create new review   =>   /api/v1/review
-exports.createRoomReview = async ({body, req}) => {
+exports.createRoomReview = catchAsyncErrors(async ({body, req}) => {
   const response = {
     code: 200,
     status: 'Success',
@@ -333,9 +295,9 @@ exports.createRoomReview = async ({body, req}) => {
     response.message = 'Error. Try again';
     return response;
   }
-}
+});
 
-exports.deleteReviewService = async ({ id }) => {
+exports.deleteReview = catchAsyncErrors(async ({ id }) => {
   
   const room = await Room.findById(id);
 
@@ -356,4 +318,4 @@ exports.deleteReviewService = async ({ id }) => {
     useFindAndModify: false
   })
 
-}
+});

@@ -3,8 +3,8 @@ const {
     addRoom,
     updateRoom,
     deleteRoom,
-    getCategories,
-} = require('../room/controller');
+    getRooms,
+} = require('../room/service');
 const {
   addRoomValidator,
   updateRoomValidator,
@@ -12,7 +12,7 @@ const {
 } = require('../room/validator');
 const validationResult = require('../validators');
 
-router.post('/', addRoomValidator, validationResult, addRoom);
+router.post('/:id', addRoomValidator, validationResult, addRoom);
 
 router.patch(
   '/:id',
@@ -24,6 +24,6 @@ router.patch(
 
 router.delete('/:id', idValidator, validationResult, deleteRoom);
 
-router.get('/', getCategories);
+router.get('/', getRooms);
 
 module.exports = router;

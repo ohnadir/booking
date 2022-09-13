@@ -30,7 +30,6 @@ const roomSchema = Schema(
         unavailableDates: {type: [Date]}
       }
     ],
-    // category: { type: mongoose.Schema.Types.ObjectId, ref: 'startech'},
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
     updatedAt: Date,
     isDelete: { type: Boolean, default: false },
