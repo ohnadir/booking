@@ -2,7 +2,7 @@ const router = require('express').Router();
 const {
   registerUser,
   updateUser,
-  userSignIn,
+  userLogin,
   deleteUser,
   getUsers,
   searchUser,
@@ -26,7 +26,7 @@ const { isAuthenticatedUser, authorizeRoles } = require('../middleware/auth')
 // authorizeRoles('admin');
 
 router.post('/register', registerUserValidator, validationResult, registerUser);
-router.post('/login', userSignIn);
+router.post('/login', userLogin);
 
 router.patch(
   '/:id',
