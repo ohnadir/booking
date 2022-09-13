@@ -4,7 +4,7 @@ const {
     updateRoom,
     deleteRoom,
     getRooms,
-} = require('../room/service');
+} = require('../room/controller');
 const {
   addRoomValidator,
   updateRoomValidator,
