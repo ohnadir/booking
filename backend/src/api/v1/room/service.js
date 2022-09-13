@@ -204,13 +204,8 @@ exports.getRoom = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-exports.filterRoom = catchAsyncErrors(async ({ q }) => {
-  const response = {
-    code: 200,
-    status: 'Success',
-    message: 'Room data found successfully',
-    data: {},
-  };
+exports.filterRoom = catchAsyncErrors(async (req, res, next) => {
+  const q = req.query;
 
   try {
 
@@ -220,36 +215,31 @@ exports.filterRoom = catchAsyncErrors(async ({ q }) => {
     let filteredRoomsCount = rooms.length;
 
     if (rooms.length === 0) {
-      response.code = 404;
-      response.status = 'Failed';
-      response.message = 'No room data found';
+      return next(new ErrorHandler('No Room Found', 404))
     }
 
-    response.data.rooms = rooms;
-    response.data.filteredRoomsCount = filteredRoomsCount;
-    return response;
+    const data = {
+      rooms:rooms,
+      filteredRoomsCount:filteredRoomsCount
+    };
+    res.status(200).json({
+      Success: true,
+      statusCode:200,
+      message:"Filter Room Successfully",
+      data: data
+  })
 
   } catch (error) {
-
-    response.code = 500;
-    response.status = 'failed';
-    response.message = 'Error. Try again';
-    return response;
-    
+    return next(new ErrorHandler('Error. Try again', 500))
   }
 });
 
 // Create new review   =>   /api/v1/review
-exports.createRoomReview = catchAsyncErrors(async ({body, req}) => {
-  const response = {
-    code: 200,
-    status: 'Success',
-    message: 'Review create Successfully'
-  };
-
+exports.createRoomReview = catchAsyncErrors(async (req, res, next) => {
+  const { rating, comment, roomId } = body;
 
   try {
-    const { rating, comment, roomId } = body;
+    
 
     const review = {
       user: req.user._id,
@@ -260,10 +250,7 @@ exports.createRoomReview = catchAsyncErrors(async ({body, req}) => {
 
     const room = await Room.findById(roomId);
     if (!room) {
-      response.code = 402;
-      response.status = 'Failed';
-      response.message = 'No Data found by this ID';
-      return response;    
+      return next(new ErrorHandler('No data found by This is', 402))  
     }
 
     const isReviewed = room.reviews.find(
@@ -286,29 +273,27 @@ exports.createRoomReview = catchAsyncErrors(async ({body, req}) => {
 
     await room.save({ validateBeforeSave: false });
 
-    return response;
+    res.status(200).json({
+      Success: true,
+      statusCode:200,
+      message:"Create Review Successfully"
+  })
 
   }
   catch (error) {
-    response.code = 500;
-    response.status = 'failed';
-    response.message = 'Error. Try again';
-    return response;
+    return next(new ErrorHandler('Error. Try again', 500))
   }
 });
 
-exports.deleteReview = catchAsyncErrors(async ({ id }) => {
-  
+exports.deleteReview = catchAsyncErrors(async (req, res, next) => {
+  const id = req.params.id
   const room = await Room.findById(id);
 
   if (!room) {
-    response.code = 402;
-    response.status = 'Failed';
-    response.message = 'No Data found by this ID';
-    return response; 
+    return next(new ErrorHandler('No data found by this id ', 500))
   }
   const reviews = room.reviews.filter(review => review._id.toString() !== req.query.id.toString());
-  await Room.findByIdAndUpdate(req.query.roomId, {
+  await Room.findByIdAndUpdate(req.query.id, {
     reviews,
     ratings,
     numOfReviews
@@ -317,5 +302,9 @@ exports.deleteReview = catchAsyncErrors(async ({ id }) => {
     runValidators: true,
     useFindAndModify: false
   })
-
+  res.status(200).json({
+    Success: true,
+    statusCode:200,
+    message:"Delete Room Successfully"
+})
 });
