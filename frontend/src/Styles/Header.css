@@ -1,6 +1,12 @@
 .option-container{
     background-color: white;
-    border: 2px solid yellow;
+    border: 3px solid #febb02;
     width: 97.5%;
     padding: 8px ;
+}
+.option-item{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: lightgray;
 }
